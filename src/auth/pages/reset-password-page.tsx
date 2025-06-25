@@ -63,48 +63,48 @@ export function ResetPasswordPage() {
   };
 
   return (
-    <Form {...form}>
+      <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-4">
           <h1 className="text-2xl font-semibold tracking-tight">
-            Reset Password
-          </h1>
-          <p className="text-sm text-muted-foreground">
+              Reset Password
+            </h1>
+            <p className="text-sm text-muted-foreground">
             Enter your email address and we'll send you a password reset link.
-          </p>
-        </div>
+            </p>
+          </div>
 
-        {error && (
-          <Alert variant="destructive">
-            <AlertTitle>{error}</AlertTitle>
-          </Alert>
-        )}
+          {error && (
+            <Alert variant="destructive">
+              <AlertTitle>{error}</AlertTitle>
+            </Alert>
+          )}
 
         {success && (
-          <Alert>
+            <Alert>
             <AlertTitle>
               Password reset instructions have been sent to your email!
             </AlertTitle>
-          </Alert>
-        )}
-
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input type="email" placeholder="Enter your email" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+            </Alert>
           )}
-        />
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                <Input type="email" placeholder="Enter your email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
         <Button type="submit" className="w-full">
           Send Reset Instructions
-        </Button>
+            </Button>
 
         <Button
           type="button"
@@ -114,7 +114,7 @@ export function ResetPasswordPage() {
         >
           Back to Login
         </Button>
-      </form>
-    </Form>
+        </form>
+      </Form>
   );
 }

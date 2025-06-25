@@ -96,7 +96,7 @@ export const MENU_SIDEBAR: MenuConfig = [
       {
         title: 'Projects',
         children: [
-          { title: '3 Columns', path: '/public-profile/projects/3-columns' },
+          { title: 'Dashboard', path: '/public-profile/projects/3-columns' },
           { title: '2 Columns', path: '/public-profile/projects/2-columns' },
         ],
       },

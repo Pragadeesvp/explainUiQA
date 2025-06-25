@@ -53,7 +53,7 @@ export function ChangePasswordPage() {
     }
   };
 
-  return (
+    return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-4">
@@ -62,53 +62,53 @@ export function ChangePasswordPage() {
           </h1>
           <p className="text-sm text-muted-foreground">
             Enter your new password below.
-          </p>
-        </div>
+            </p>
+          </div>
 
-        {error && (
-          <Alert variant="destructive">
-            <AlertTitle>{error}</AlertTitle>
-          </Alert>
-        )}
+          {error && (
+            <Alert variant="destructive">
+              <AlertTitle>{error}</AlertTitle>
+            </Alert>
+          )}
 
         {success && (
-          <Alert>
+            <Alert>
             <AlertTitle>Password changed successfully! Redirecting...</AlertTitle>
-          </Alert>
-        )}
+            </Alert>
+          )}
 
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>New Password</FormLabel>
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>New Password</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem>
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
               <FormLabel>Confirm New Password</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
         <Button type="submit" className="w-full">
           Change Password
-        </Button>
-      </form>
-    </Form>
+          </Button>
+        </form>
+      </Form>
   );
 }
