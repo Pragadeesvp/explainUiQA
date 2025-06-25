@@ -1,10 +1,14 @@
+import { MessageCircleMore } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Container } from '@/components/common/container';
+import { ChatSheet } from '@/partials/topbar/chat-sheet';
 
 export function Demo6Content() {
   return (
-    <Container>
-      <div className="grid gap-5 lg:gap-7.5">
+    <div className="relative">
+      <Container>
+        <div className="grid gap-5 lg:gap-7.5">
         <div className="grid lg:grid-cols-3 gap-y-5 lg:gap-7.5 items-stretch">
           <div className="lg:col-span-2">
             <Card className="h-full">
@@ -108,6 +112,20 @@ export function Demo6Content() {
           </Card>
         </div>
       </div>
-    </Container>
+      </Container>
+
+      {/* Floating Chat Button */}
+      <ChatSheet
+        trigger={
+          <Button
+            className="fixed right-6 top-1/2 -translate-y-1/2 z-50 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 bg-primary hover:bg-primary/90"
+            mode="icon"
+            size="lg"
+          >
+            <MessageCircleMore className="h-6 w-6" />
+          </Button>
+        }
+      />
+    </div>
   );
 }
