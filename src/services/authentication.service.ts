@@ -58,11 +58,13 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
       onSuccess: async result => {
         const idToken = result.getIdToken().getJwtToken();
 
-        // Store credential provider info for other services to use
+        // Store credential provider info for other services to use (match old version)
         localStorage.setItem(
           'cognitoCredentialsProvider',
           JSON.stringify({
             identityPoolId: import.meta.env.VITE_COGNITO_IDENTITY_POOL_ID,
+            region: import.meta.env.VITE_AWS_REGION,
+            userPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID,
             idToken,
           })
         );
@@ -92,7 +94,18 @@ export const completeNewPasswordChallenge = async (
 ): Promise<AuthResponse> => {
   return new Promise(resolve => {
     cognitoUser.completeNewPasswordChallenge(newPassword, {}, {
-      onSuccess: async () => {
+      onSuccess: async result => {
+        const idToken = result.getIdToken().getJwtToken();
+        // Store credential provider info for other services to use (match old version)
+        localStorage.setItem(
+          'cognitoCredentialsProvider',
+          JSON.stringify({
+            identityPoolId: import.meta.env.VITE_COGNITO_IDENTITY_POOL_ID,
+            region: import.meta.env.VITE_AWS_REGION,
+            userPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID,
+            idToken,
+          })
+        );
         const attributes = await getUserAttributes(cognitoUser);
         const email = attributes.find(attr => attr.Name === 'email')?.Value;
         resolve({

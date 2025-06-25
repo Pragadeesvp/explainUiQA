@@ -19,6 +19,7 @@ export * from './card-project-mini';
 export * from './card-project-extended';
 export * from './card-project-extended-row';
 export * from './card-project-row';
+export * from './card-project-row-mini';
 export * from './card-role';
 export * from './card-team';
 export * from './card-team-row';

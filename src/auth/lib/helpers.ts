@@ -1,9 +1,7 @@
 import { getData, setData } from '@/lib/storage';
 import { AuthModel } from './models';
 
-const AUTH_LOCAL_STORAGE_KEY = `${import.meta.env.VITE_APP_NAME}-auth-v${
-  import.meta.env.VITE_APP_VERSION || '1.0'
-}`;
+const AUTH_LOCAL_STORAGE_KEY = `${import.meta.env.VITE_APP_NAME}-auth-v${import.meta.env.VITE_APP_VERSION || '1.0'}`;
 
 /**
  * Get stored auth information from local storage

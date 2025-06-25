@@ -4,6 +4,7 @@ import { JSX, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { MENU_SIDEBAR_COMPACT } from '@/config/menu.config';
 import { MenuConfig, MenuItem } from '@/config/types';
+import { useSidebarMenu } from '@/hooks/use-menu-api';
 import { cn } from '@/lib/utils';
 import {
   AccordionMenu,
@@ -17,6 +18,7 @@ import {
 
 export function SidebarMenuPrimary() {
   const { pathname } = useLocation();
+  const { data: menuData, isLoading, error } = useSidebarMenu();
 
   // Memoize matchPath to prevent unnecessary re-renders
   const matchPath = useCallback(
@@ -156,6 +158,27 @@ export function SidebarMenuPrimary() {
     }
   };
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="px-3.5 py-4">
+        <div className="animate-pulse space-y-2">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="h-9 bg-muted rounded"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state with fallback
+  if (error) {
+    console.error('Failed to load sidebar menu:', error);
+  }
+
+  // Use API data if available, otherwise fallback to static config
+  const menuItems = menuData || MENU_SIDEBAR_COMPACT;
+
   return (
     <AccordionMenu
       type="single"
@@ -164,7 +187,7 @@ export function SidebarMenuPrimary() {
       collapsible
       classNames={classNames}
     >
-      {buildMenu(MENU_SIDEBAR_COMPACT)}
+      {buildMenu(menuItems)}
     </AccordionMenu>
   );
 }

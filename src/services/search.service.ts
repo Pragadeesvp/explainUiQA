@@ -1,4 +1,4 @@
-import { getJWTToken } from '@/utils/jwt.utils';
+import { getJWTToken } from '@/utils/auth.utils';
 import { getOrganizationId } from '@/auth/adapters/organization.service';
 
 const BASE_URL = import.meta.env.VITE_EXPLAIN_BACKEND_URL;

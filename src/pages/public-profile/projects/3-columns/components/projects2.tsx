@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CardProjectMini, CardProjectRow } from '@/partials/cards';
+import { CardProjectMini, CardProjectRowMini } from '@/partials/cards';
 import { LayoutGrid, List } from 'lucide-react';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
@@ -281,7 +281,7 @@ const Projects2 = () => {
 
   const renderItem = (item: IProjects2Item, index: number) => {
     return (
-      <CardProjectRow
+      <CardProjectRowMini
         logo={item.logo}
         name={item.name}
         description={item.description}

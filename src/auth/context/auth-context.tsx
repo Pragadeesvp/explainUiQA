@@ -1,19 +1,17 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
-  login as apiLogin,
-  logout as apiLogout,
+  login as authLogin,
+  logout as authLogout,
   completeNewPasswordChallenge,
   LoginCredentials,
-  AuthResponse,
 } from '@/services/authentication.service';
-import { CognitoUser, CognitoUserPool, CognitoUserAttribute, CognitoUserSession } from 'amazon-cognito-identity-js';
 import { getBucketNameFromToken } from '@/utils/jwt.utils';
+import { CognitoUser, CognitoUserAttribute, CognitoUserPool, CognitoUserSession } from 'amazon-cognito-identity-js';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// --- Configuration ---
 const poolData = {
-  UserPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID || '',
-  ClientId: import.meta.env.VITE_COGNITO_CLIENT_ID || '',
+  UserPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID,
+  ClientId: import.meta.env.VITE_COGNITO_CLIENT_ID,
 };
 
 const userPool = new CognitoUserPool(poolData);
@@ -21,32 +19,32 @@ const userPool = new CognitoUserPool(poolData);
 // Token expiration check interval in milliseconds (check every 30 seconds)
 const TOKEN_CHECK_INTERVAL = 30000;
 
-// --- Interfaces ---
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  user: { name: string; email: string } | null;
+  user: {
+    name: string;
+    email: string;
+    avatarUrl?: string;
+  } | null;
   requiresNewPassword: boolean;
   bucketName: string | null;
   bucketNameError: string | null;
   login: (credentials: LoginCredentials) => Promise<void>;
-  completeNewPassword: (newPassword: string) => Promise<void>;
+  completeNewPassword: (email: string, newPassword: string) => Promise<void>;
   logout: () => Promise<void>;
+  verify: () => Promise<void>;
+  setLoading: (loading: boolean) => void;
 }
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-// --- Context ---
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const [user, setUser] = useState<AuthContextType['user']>(null);
   const [requiresNewPassword, setRequiresNewPassword] = useState(false);
   const [cognitoUser, setCognitoUser] = useState<CognitoUser | null>(null);
   const [bucketName, setBucketName] = useState<string | null>(null);
@@ -107,7 +105,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       const session = await new Promise<CognitoUserSession>((resolve, reject) => {
-        currentUser.getSession((err, session) => {
+        currentUser.getSession((err: any, session: any) => {
           if (err) reject(err);
           else resolve(session);
         });
@@ -147,6 +145,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     // Set up interval to check token expiration
     const intervalId = setInterval(handleTokenExpiration, TOKEN_CHECK_INTERVAL);
+
+    // Clean up interval on unmount
     return () => clearInterval(intervalId);
   }, [handleTokenExpiration]);
 
@@ -157,7 +157,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const cognitoUser = userPool.getCurrentUser();
         if (cognitoUser) {
           const session = await new Promise<CognitoUserSession>((resolve, reject) => {
-            cognitoUser.getSession((err, session) => {
+            cognitoUser.getSession((err: any, session: any) => {
               if (err) reject(err);
               else resolve(session);
             });
@@ -166,7 +166,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           if (session.isValid()) {
             // Additional check for token expiration
             const accessToken = session.getAccessToken();
-            const expirationTime = accessToken.getExpiration() * 1000;
+            const expirationTime = accessToken.getExpiration() * 1000; // Convert to milliseconds
             const currentTime = Date.now();
 
             if (currentTime >= expirationTime) {
@@ -178,99 +178,161 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             const attributes = await new Promise<CognitoUserAttribute[]>((resolve, reject) => {
               cognitoUser.getUserAttributes((err, attributes) => {
                 if (err) reject(err);
-                else resolve(attributes || []);
+                else resolve(attributes);
               });
             });
 
-            const name = attributes.find(attr => attr.Name === 'name')?.Value || '';
-            const email = attributes.find(attr => attr.Name === 'email')?.Value || '';
+            const name = attributes.find(attr => attr.Name === 'name')?.Value;
+            const email = attributes.find(attr => attr.Name === 'email')?.Value;
             setUser({ name, email });
             setIsAuthenticated(true);
+            // Update bucket name for existing session
             updateBucketName();
           } else {
+            // If session is invalid on mount, clear auth state and redirect
             await clearAuthState();
             navigate('/login');
           }
+        } else {
+          // No user found, ensure auth state is cleared
+          await clearAuthState();
         }
-        setIsLoading(false);
       } catch (error) {
         console.error('Session check failed:', error);
         await clearAuthState();
+        navigate('/login');
+      } finally {
         setIsLoading(false);
       }
     };
+
     checkSession();
-  }, [clearAuthState, navigate, updateBucketName]);
+  }, [navigate, clearAuthState]);
 
   const login = async (credentials: LoginCredentials) => {
     setIsLoading(true);
     setError(null);
+    setRequiresNewPassword(false);
+    setCognitoUser(null);
+
     try {
-      const response = await apiLogin(credentials);
-      if (response.success) {
-        setUser(response.user || null);
-        setIsAuthenticated(true);
-        updateBucketName();
-        navigate('/public-profile/projects/3-columns');
-      } else if (response.requiresNewPassword) {
+      const response = await authLogin(credentials);
+
+      if (response.requiresNewPassword) {
         setRequiresNewPassword(true);
-        setCognitoUser(response.cognitoUser || null);
+        setCognitoUser(response.cognitoUser);
+        setError('Please set a new password');
+      } else if (response.success && response.user) {
+        setIsAuthenticated(true);
+        setUser(response.user);
+        // Update bucket name after successful login
+        updateBucketName();
       } else {
         setError(response.error || 'Login failed');
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const completeNewPassword = async (newPassword: string) => {
-    if (!cognitoUser) {
-      setError('No user found to update password.');
-      return;
-    }
+  const completeNewPassword = async (email: string, newPassword: string) => {
     setIsLoading(true);
-    const response = await completeNewPasswordChallenge(cognitoUser, newPassword);
-    if (response.success && response.user) {
-      setUser(response.user);
-      setIsAuthenticated(true);
-      setRequiresNewPassword(false);
-      updateBucketName();
-      navigate('/public-profile/projects/3-columns');
-    } else {
-      setError(response.error || 'Failed to set new password.');
+    setError(null);
+
+    try {
+      if (!cognitoUser) {
+        throw new Error('No active session found');
+      }
+
+      const response = await completeNewPasswordChallenge(cognitoUser, newPassword);
+
+      if (response.success && response.user) {
+        setIsAuthenticated(true);
+        setUser(response.user);
+        setRequiresNewPassword(false);
+        setCognitoUser(null);
+        // Update bucket name after successful password completion
+        updateBucketName();
+      } else {
+        setError(response.error || 'Failed to set new password');
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const logout = async () => {
-    await apiLogout();
-    await clearAuthState();
-    navigate('/auth/signin');
+    setIsLoading(true);
+
+    try {
+      await authLogout();
+      await clearAuthState();
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Logout failed');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const value = {
-    isAuthenticated,
-    isLoading,
-    error,
-    user,
-    requiresNewPassword,
-    bucketName,
-    bucketNameError,
-    login,
-    completeNewPassword,
-    logout,
+  const verify = async () => {
+    setIsLoading(true);
+    try {
+      const cognitoUser = userPool.getCurrentUser();
+      if (cognitoUser) {
+        const session = await new Promise<CognitoUserSession>((resolve, reject) => {
+          cognitoUser.getSession((err: any, session: any) => {
+            if (err) reject(err);
+            else resolve(session);
+          });
+        });
+        if (session.isValid()) {
+          setIsAuthenticated(true);
+          // Optionally update user info here
+        } else {
+          setIsAuthenticated(false);
+        }
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch {
+      setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  const setLoading = (loading: boolean) => setIsLoading(loading);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        isLoading,
+        error,
+        user,
+        requiresNewPassword,
+        bucketName,
+        bucketNameError,
+        login,
+        completeNewPassword,
+        logout,
+        verify,
+        setLoading,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-// --- Hook ---
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}; 
+};

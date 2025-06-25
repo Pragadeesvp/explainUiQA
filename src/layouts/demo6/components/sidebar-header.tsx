@@ -11,20 +11,40 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { extractOrganizationsFromToken } from '@/services/organization.service';
+import { getJWTToken } from '@/utils/auth.utils';
+import { Organization } from '@/model/organization.types';
 
 export function SidebarHeader() {
   const { pathname } = useLocation();
-  const [selectedMenuItem, setSelectedMenuItem] = useState(MENU_ROOT[1]);
-
-  const handleInputChange = () => {};
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [currentOrg, setCurrentOrg] = useState<Organization | null>(null);
 
   useEffect(() => {
-    MENU_ROOT.forEach((item) => {
-      if (item.rootPath && pathname.includes(item.rootPath)) {
-        setSelectedMenuItem(item);
+    // Get organizations from token
+    try {
+      const token = getJWTToken();
+      const orgs = extractOrganizationsFromToken(token);
+      setOrganizations(orgs);
+      // Try to get current org from localStorage
+      const stored = localStorage.getItem('currentOrganization');
+      if (stored) {
+        setCurrentOrg(JSON.parse(stored));
+      } else if (orgs.length > 0) {
+        setCurrentOrg(orgs[0]);
+        localStorage.setItem('currentOrganization', JSON.stringify(orgs[0]));
       }
-    });
-  }, [pathname]);
+    } catch {
+      setOrganizations([]);
+      setCurrentOrg(null);
+    }
+  }, []);
+
+  const handleOrgSelect = (org: Organization) => {
+    setCurrentOrg(org);
+    localStorage.setItem('currentOrganization', JSON.stringify(org));
+    window.dispatchEvent(new CustomEvent('organizationChanged', { detail: org }));
+  };
 
   return (
     <div className="mb-3.5">
@@ -36,7 +56,7 @@ export function SidebarHeader() {
             alt="image"
           />
           <img
-            src={toAbsoluteUrl('src/assests/img/explain-logo.svg')}
+            src={toAbsoluteUrl('src/assests/img/explain-logo-dark.svg')}
             className="hidden dark:block h-[50px]"
             alt="image"
           />
@@ -44,20 +64,17 @@ export function SidebarHeader() {
 
         <DropdownMenu>
           <DropdownMenuTrigger className="cursor-pointer text-mono font-medium flex items-center justify-between gap-2 w-[auto] p-1 rounded-md bg-background border-border">
-           Staging
+            {currentOrg ? currentOrg.displayName : 'Select Organization'}
             <ChevronDown className="size-3.5! text-muted-foreground" />
           </DropdownMenuTrigger>
           <DropdownMenuContent sideOffset={10} side="bottom" align="start">
-            {MENU_ROOT.map((item, index) => (
+            {organizations.map((org) => (
               <DropdownMenuItem
-                key={index}
-                asChild
-                className={cn(item === selectedMenuItem && 'bg-accent')}
+                key={org.id}
+                onClick={() => handleOrgSelect(org)}
+                className={cn(currentOrg && org.id === currentOrg.id && 'bg-accent')}
               >
-                <Link to={item.path || ''}>
-                  {item.icon && <item.icon />}
-                  {item.title}
-                </Link>
+                {org.displayName}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -69,7 +86,7 @@ export function SidebarHeader() {
           <Search className="text-muted-foreground absolute top-1/2 start-3.5 -translate-y-1/2 size-4" />
           <Input
             placeholder="Search"
-            onChange={handleInputChange}
+            onChange={() => {}}
             className="px-9 min-w-0"
             value=""
           />

@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { ScreenLoader } from '@/components/common/screen-loader';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/auth/context/auth-context';
 
 /**
  * Component to protect routes that require authentication.

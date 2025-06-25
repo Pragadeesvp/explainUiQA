@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/auth/context/auth-context';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, Check, Eye, EyeOff } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -23,7 +23,7 @@ import { LoaderCircleIcon } from 'lucide-react';
 export function SignInPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { login, isLoading, error, requiresNewPassword } = useAuth();
+  const { login, isLoading, error, requiresNewPassword, isAuthenticated } = useAuth();
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const form = useForm<SigninSchemaType>({
@@ -46,6 +46,12 @@ export function SignInPage() {
       });
     }
   }, [form]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   async function onSubmit(values: SigninSchemaType) {
     if (values.rememberMe) {
