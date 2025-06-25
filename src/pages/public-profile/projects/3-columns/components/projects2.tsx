@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CardProject, CardProjectRow } from '@/partials/cards';
+import { CardProjectMini, CardProjectRow } from '@/partials/cards';
 import { LayoutGrid, List } from 'lucide-react';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
@@ -70,102 +70,23 @@ const Projects2 = () => {
         ],
       },
     },
-    // {
-    //   logo: 'telegram.svg',
-    //   name: 'Radiant Wave',
-    //   description: 'Short-term accommodation marketplace',
-    //   startDate: 'Mar 09',
-    //   endDate: 'Dec 23',
-    //   status: {
-    //     label: 'Completed',
-    //     variant: 'success',
-    //   },
-    //   progress: {
-    //     variant: 'bg-green-500',
-    //     value: 100,
-    //   },
-    //   team: {
-    //     size: 'size-[30px]',
-    //     group: [{ filename: '300-24.png' }, { filename: '300-7.png' }],
-    //   },
-    // },
-    // {
-    //   logo: 'kickstarter.svg',
-    //   name: 'Dreamweaver',
-    //   description: 'Social media photo sharing',
-    //   startDate: 'Mar 05',
-    //   endDate: 'Dec 12',
-    //   status: {
-    //     label: 'Upcoming',
-    //     variant: 'secondary',
-    //   },
-    //   progress: {
-    //     variant: 'bg-input',
-    //     value: 100,
-    //   },
-    //   team: {
-    //     size: 'size-[30px]',
-    //     group: [
-    //       { filename: '300-21.png' },
-    //       { filename: '300-1.png' },
-    //       { filename: '300-2.png' },
-    //     ],
-    //     more: {
-    //       number: 10,
-    //       variant: 'text-white ring-background bg-green-500',
-    //     },
-    //   },
-    // },
-    // {
-    //   logo: 'quickbooks.svg',
-    //   name: 'Horizon Quest',
-    //   description: 'Team communication and collaboration',
-    //   startDate: 'Mar 03',
-    //   endDate: 'Dec 11',
-    //   status: {
-    //     label: 'In Progress',
-    //     variant: 'primary',
-    //   },
-    //   progress: {
-    //     variant: 'bg-primary',
-    //     value: 19,
-    //   },
-    //   team: {
-    //     size: 'size-[30px]',
-    //     group: [
-    //       { filename: '300-1.png' },
-    //       { filename: '300-2.png' },
-    //       {
-    //         fallback: 'M',
-    //         variant:
-    //           'text-destructive-foreground ring-background bg-destructive',
-    //       },
-    //     ],
-    //   },
-    // },
-    // {
-    //   logo: 'google-analytics.svg',
-    //   name: 'Golden Gate Analytics',
-    //   description: 'Note-taking and organization app',
-    //   startDate: 'Mar 22',
-    //   endDate: 'Dec 14',
-    //   status: {
-    //     label: 'Upcoming',
-    //     variant: 'secondary',
-    //   },
-    //   progress: {
-    //     variant: 'bg-input',
-    //     value: 100,
-    //   },
-    //   team: {
-    //     size: 'size-[30px]',
-    //     group: [
-    //       { filename: '300-5.png' },
-    //       { filename: '300-17.png' },
-    //       { filename: '300-16.png' },
-    //     ],
-    //   },
-    // },
+    {
+      logo: 'telegram.svg',
+      name: 'Radiant Wave',
+      description: 'Short-term accommodation marketplace',
+      status: {
+        label: 'Completed',
+        variant: 'success',
+      },
+      progress: {
+        variant: 'bg-green-500',
+        value: 100,
+      },
+      team: {
+        size: 'size-[30px]',
+        group: [{ filename: '300-24.png' }, { filename: '300-7.png' }],
+      },
+    },
     // {
     //   logo: 'google-webdev.svg',
     //   name: 'Celestial SaaS',
@@ -346,12 +267,10 @@ const Projects2 = () => {
 
   const renderProject = (project: IProjects2Item, index: number) => {
     return (
-      <CardProject
+      <CardProjectMini
         logo={project.logo}
         name={project.name}
         description={project.description}
-        startDate={project.startDate}
-        endDate={project.endDate}
         status={project.status}
         progress={project.progress}
         team={project.team}
@@ -398,16 +317,16 @@ const Projects2 = () => {
       </div>
       {activeView === 'cards' && (
         <div id="projects_cards">
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5 lg:gap-7.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-3">
             {projects.map((project, index) => {
               return renderProject(project, index);
             })}
           </div>
-          <div className="flex grow justify-center pt-5 lg:pt-7.5">
+          {/* <div className="flex grow justify-center pt-5 lg:pt-7.5">
             <Button mode="link" underlined="dashed" asChild>
               <Link to="#">Show more projects</Link>
             </Button>
-          </div>
+          </div> */}
         </div>
       )}
       {activeView === 'list' && (

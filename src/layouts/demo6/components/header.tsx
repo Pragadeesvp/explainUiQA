@@ -30,13 +30,13 @@ const Header = () => {
     <header className="flex lg:hidden items-center fixed z-10 top-0 start-0 end-0 shrink-0 bg-muted h-(--header-height)">
       <Container className="flex items-center justify-between flex-wrap gap-3">
         <Link to="/">
-          <img
-            src={toAbsoluteUrl('/media/app/mini-logo-gray.svg')}
+           <img
+            src={toAbsoluteUrl('assests/img/explain-logo.svg')}
             className="dark:hidden min-h-[30px]"
             alt="image"
           />
           <img
-            src={toAbsoluteUrl('/media/app/mini-logo-gray-dark.svg')}
+            src={toAbsoluteUrl('assests/img/explain-logo.svg')}
             className="hidden dark:block min-h-[30px]"
             alt="image"
           />

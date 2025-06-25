@@ -1,4 +1,4 @@
-import { ChatSheet } from '@/partials/topbar/chat-sheet';
+//import { ChatSheet } from '@/partials/topbar/chat-sheet';
 import { NotificationsSheet } from '@/partials/topbar/notifications-sheet';
 import { UserDropdownMenu } from '@/partials/topbar/user-dropdown-menu';
 import { MessageCircleMore, MessageSquareDot } from 'lucide-react';
@@ -18,7 +18,7 @@ export function SidebarFooter() {
         }
       />
 
-      <div className="flex flex-center gap-1.5">
+      {/* <div className="flex flex-center gap-1.5">
         <NotificationsSheet
           trigger={
             <Button
@@ -41,7 +41,7 @@ export function SidebarFooter() {
             </Button>
           }
         />
-      </div>
+      </div> */}
     </div>
   );
 }

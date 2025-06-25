@@ -15,6 +15,7 @@ export * from './card-notification';
 export * from './card-now-playing';
 export * from './card-post';
 export * from './card-project';
+export * from './card-project-mini';
 export * from './card-project-extended';
 export * from './card-project-extended-row';
 export * from './card-project-row';

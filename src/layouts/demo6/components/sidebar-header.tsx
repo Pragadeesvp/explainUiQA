@@ -30,21 +30,21 @@ export function SidebarHeader() {
     <div className="mb-3.5">
       <div className="flex items-center justify-between gap-2.5 px-3.5 h-[70px]">
         <Link to="/">
-          <img
-            src={toAbsoluteUrl('/media/app/mini-logo-circle.svg')}
-            className="dark:hidden h-[42px]"
-            alt=""
+           <img
+            src={toAbsoluteUrl('src/assests/img/explain-logo.svg')}
+            className="dark:hidden h-[50px]"
+            alt="image"
           />
           <img
-            src={toAbsoluteUrl('/media/app/mini-logo-circle-dark.svg')}
-            className="hidden dark:inline-block h-[42px]"
-            alt=""
+            src={toAbsoluteUrl('src/assests/img/explain-logo.svg')}
+            className="hidden dark:block h-[50px]"
+            alt="image"
           />
         </Link>
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="cursor-pointer text-mono font-medium flex items-center justify-between gap-2 w-[150px]">
-            Metronic Cloud
+          <DropdownMenuTrigger className="cursor-pointer text-mono font-medium flex items-center justify-between gap-2 w-[auto] p-1 rounded-md bg-background border-border">
+           Staging
             <ChevronDown className="size-3.5! text-muted-foreground" />
           </DropdownMenuTrigger>
           <DropdownMenuContent sideOffset={10} side="bottom" align="start">

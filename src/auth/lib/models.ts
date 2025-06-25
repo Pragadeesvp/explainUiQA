@@ -10,6 +10,14 @@ export interface AuthModel {
   refresh_token?: string;
 }
 
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+export interface AuthResult {
+  accessToken: string;
+  idToken: string;
+}
 // User model representing the user profile
 export interface UserModel {
   username: string;
@@ -26,4 +34,16 @@ export interface UserModel {
   pic?: string;
   language?: LanguageCode; // Maintain existing type
   is_admin?: boolean; // Added admin flag
+}
+export interface Organization {
+  id: string;
+  name: string;
+  displayName: string;
+}
+export interface OrganizationContext {
+  currentOrganization: Organization | null;
+  availableOrganizations: Organization[];
+  setCurrentOrganization: (organization: Organization) => void;
+  isLoading: boolean;
+  error: string | null;
 }

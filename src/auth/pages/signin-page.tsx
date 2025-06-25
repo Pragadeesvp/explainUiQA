@@ -92,7 +92,7 @@ export function SignInPage() {
         </div>
 
         {error && (
-          <Alert appearance="destructive" size="sm">
+          <Alert variant="destructive" appearance="light" size="sm">
             <AlertTitle>{error}</AlertTitle>
           </Alert>
         )}
