@@ -1,95 +1,78 @@
-# Metronic 9 | All-in-One Tailwind based HTML/React/Next.js Template for Modern Web Applications
+# QA Explain UI
+
+A modern React application for QA document management and analysis.
+
+## Features
+
+- Modern React with TypeScript
+- Vite for fast development and building
+- Tailwind CSS for styling
+- AWS Cognito Authentication
+- File upload and management
+- Document analysis and processing
+
+## Prerequisites
+
+- Node.js 18 or later
+- npm or yarn
+- An AWS account with Cognito User Pool
+
+## Environment Setup
+
+1. Create a `.env` file in the root directory with the following variables:
+
+```env
+VITE_COGNITO_USER_POOL_ID=your-user-pool-id
+VITE_COGNITO_CLIENT_ID=your-client-id
+VITE_COGNITO_IDENTITY_POOL_ID=your-identity-pool-id
+VITE_AWS_REGION=your-aws-region
+```
 
 ## Getting Started
 
-Refer to the [Metronic Vite Documentation](https://docs.keenthemes.com/metronic-react)
-for comprehensive guidance on setting up and getting started your project with Metronic.
-
-## ReUI Components
-
-Metronic now leverages [ReUI](https://reui.io), our open-source React component library.
-
-Star the [ReUI on GitHub](https://github.com/keenthemes/reui) to help us grow the project and stay updated on new features!
-
-## Login with Supabase Auth
-
-This project uses Supabase for authentication. Follow these steps to set up and test the login functionality:
-
-### Prerequisites
-
-- Node.js 16.x or higher
-- Npm or Yarn
-- Tailwind CSS 4.x
-- React 19.x
-- A Supabase account and project
-
-### Installation
-
-To set up the project dependencies, including those required for React 19, use the `--force` flag to resolve any dependency conflicts:
-
+1. Install dependencies:
 ```bash
-npm install --force
+npm install
 ```
 
-### Environment Setup
-
-1. Make sure your `.env` file is configured with Supabase credentials:
-
-```
-
-VITE_SUPABASE_URL=https://your-project-url.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
-VITE_SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-for-admin-functions
-
-```
-
-### Creating a Demo User
-
-For testing purposes, you can create a demo user with:
-
-```bash
-npm run create-demo-user
-```
-
-This will create a user with the following credentials:
-
-- Email: demo@kt.com
-- Password: demo123
-
-### Login Features
-
-The login implementation includes:
-
-- Email/Password authentication
-- Google OAuth integration
-- Password reset flow
-- Error handling
-- Token management
-- Protected routes
-
-### Setting Up the Demo Layout
-
-Follow the [Metronic Vite Documentation](https://docs.keenthemes.com/metronic-vite/guides/layouts) to configure and use the demo layout of your choice.
-
-### Development
-
-Start the development server:
-
+2. Start the development server:
 ```bash
 npm run dev
 ```
 
-Visit `http://localhost:5173/auth/signin` to test the login functionality.
+3. Build for production:
+```bash
+npm run build
+```
 
-### Testing Login
+## Authentication Flow
 
-You can test login using:
+The application uses AWS Cognito for authentication with the following features:
 
-1. The demo account credentials
-2. Register a new account (when implemented)
-3. Google Sign-in (requires proper OAuth setup in Supabase)
+1. User sign-in with email and password
+2. Password reset functionality
+3. New password required challenge handling
+4. Session management with token refresh
+5. Automatic redirection to QA dashboard after login
 
-### Reporting Issues
+## Project Structure
 
-If you encounter any issues or have suggestions for improvement, please contact us at [support@keenthemes.com](mailto:support@keenthemes.com).
-Include a detailed description of the issue or suggestion, and we will work to address it in the next stable release.
+- `src/components/` - Reusable UI components
+- `src/services/` - Service layer including authentication
+- `src/contexts/` - React contexts including auth context
+- `src/hooks/` - Custom React hooks
+- `src/views/` - Page components
+- `src/utils/` - Utility functions
+- `src/types/` - TypeScript type definitions
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License.

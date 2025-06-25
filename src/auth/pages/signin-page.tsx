@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
-import { SupabaseAdapter } from '@/auth/adapters/supabase-adapter';
-import { useAuth } from '@/auth/context/auth-context';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, Check, Eye, EyeOff } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -24,125 +23,51 @@ import { LoaderCircleIcon } from 'lucide-react';
 export function SignInPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isLoading, error, requiresNewPassword } = useAuth();
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-
-  // Check for success message from password reset or error messages
-  useEffect(() => {
-    const pwdReset = searchParams.get('pwd_reset');
-    const errorParam = searchParams.get('error');
-    const errorDescription = searchParams.get('error_description');
-
-    if (pwdReset === 'success') {
-      setSuccessMessage(
-        'Your password has been successfully reset. You can now sign in with your new password.',
-      );
-    }
-
-    if (errorParam) {
-      switch (errorParam) {
-        case 'auth_callback_failed':
-          setError(
-            errorDescription || 'Authentication failed. Please try again.',
-          );
-          break;
-        case 'auth_callback_error':
-          setError(
-            errorDescription ||
-              'An error occurred during authentication. Please try again.',
-          );
-          break;
-        case 'auth_token_error':
-          setError(
-            errorDescription ||
-              'Failed to set authentication session. Please try again.',
-          );
-          break;
-        default:
-          setError(
-            errorDescription || 'Authentication error. Please try again.',
-          );
-          break;
-      }
-    }
-  }, [searchParams]);
 
   const form = useForm<SigninSchemaType>({
     resolver: zodResolver(getSigninSchema()),
     defaultValues: {
-      email: 'demo@kt.com',
-      password: 'demo123',
-      rememberMe: true,
+      email: '',
+      password: '',
+      rememberMe: false,
     },
   });
 
-  async function onSubmit(values: SigninSchemaType) {
-    try {
-      setIsProcessing(true);
-      setError(null);
-
-      console.log('Attempting to sign in with email:', values.email);
-
-      // Simple validation
-      if (!values.email.trim() || !values.password) {
-        setError('Email and password are required');
-        return;
-      }
-
-      // Sign in using the auth context
-      await login(values.email, values.password);
-
-      // Get the 'next' parameter from URL if it exists
-      const nextPath = searchParams.get('next') || '/';
-
-      // Use navigate for navigation
-      navigate(nextPath);
-    } catch (err) {
-      console.error('Unexpected sign-in error:', err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'An unexpected error occurred. Please try again.',
-      );
-    } finally {
-      setIsProcessing(false);
+  useEffect(() => {
+    const savedCredentials = localStorage.getItem('rememberedCredentials');
+    if (savedCredentials) {
+      const { email, password } = JSON.parse(savedCredentials);
+      form.reset({
+        email,
+        password,
+        rememberMe: true,
+      });
     }
+  }, [form]);
+
+  async function onSubmit(values: SigninSchemaType) {
+    if (values.rememberMe) {
+      localStorage.setItem(
+        'rememberedCredentials',
+        JSON.stringify({ email: values.email, password: values.password })
+      );
+    } else {
+      localStorage.removeItem('rememberedCredentials');
+    }
+    await login({ email: values.email, password: values.password });
   }
 
-  // Handle Google Sign In with Supabase OAuth
-  const handleGoogleSignIn = async () => {
-    try {
-      setIsGoogleLoading(true);
-      setError(null);
-
-      // Get the next path if available
-      const nextPath = searchParams.get('next');
-
-      // Calculate the redirect URL
-      const redirectTo = nextPath
-        ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`
-        : `${window.location.origin}/auth/callback`;
-
-      console.log('Initiating Google sign-in with redirect:', redirectTo);
-
-      // Use our adapter to initiate the OAuth flow
-      await SupabaseAdapter.signInWithOAuth('google', { redirectTo });
-
-      // The browser will be redirected automatically
-    } catch (err) {
-      console.error('Google sign-in error:', err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Failed to sign in with Google. Please try again.',
-      );
-      setIsGoogleLoading(false);
-    }
-  };
+  if (requiresNewPassword) {
+    return (
+      <div>
+        <h2>New Password Required</h2>
+        <p>Please enter a new password to continue.</p>
+        {/* Form to complete new password challenge would go here */}
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>
@@ -157,36 +82,6 @@ export function SignInPage() {
           </p>
         </div>
 
-        <Alert appearance="light" size="sm" close={false}>
-          <AlertIcon>
-            <AlertCircle className="text-primary" />
-          </AlertIcon>
-          <AlertTitle className="text-accent-foreground">
-            Use <strong>demo@kt.com</strong> username and {` `}
-            <strong>demo123</strong> password for demo access.
-          </AlertTitle>
-        </Alert>
-
-        <div className="flex flex-col gap-3.5">
-          <Button
-            variant="outline"
-            type="button"
-            onClick={handleGoogleSignIn}
-            disabled={isGoogleLoading}
-          >
-            {isGoogleLoading ? (
-              <span className="flex items-center gap-2">
-                <LoaderCircleIcon className="size-4! animate-spin" /> Signing in with
-                Google...
-              </span>
-            ) : (
-              <>
-                <Icons.googleColorful className="size-5!" /> Sign in with Google
-              </>
-            )}
-          </Button>
-        </div>
-
         <div className="relative py-1.5">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />
@@ -197,24 +92,8 @@ export function SignInPage() {
         </div>
 
         {error && (
-          <Alert
-            variant="destructive"
-            appearance="light"
-            onClose={() => setError(null)}
-          >
-            <AlertIcon>
-              <AlertCircle />
-            </AlertIcon>
+          <Alert appearance="destructive" size="sm">
             <AlertTitle>{error}</AlertTitle>
-          </Alert>
-        )}
-
-        {successMessage && (
-          <Alert appearance="light" onClose={() => setSuccessMessage(null)}>
-            <AlertIcon>
-              <Check />
-            </AlertIcon>
-            <AlertTitle>{successMessage}</AlertTitle>
           </Alert>
         )}
 
@@ -243,7 +122,7 @@ export function SignInPage() {
               <div className="relative">
                 <Input
                   placeholder="Your password"
-                  type={passwordVisible ? 'text' : 'password'} // Toggle input type
+                  type={passwordVisible ? 'text' : 'password'}
                   {...field}
                 />
                 <Button
@@ -293,15 +172,18 @@ export function SignInPage() {
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isProcessing}>
-          {isProcessing ? (
-            <span className="flex items-center gap-2">
-              <LoaderCircleIcon className="h-4 w-4 animate-spin" /> Loading...
-            </span>
-          ) : (
-            'Sign In'
-          )}
-        </Button>
+        <div className="pt-2">
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <span className="flex items-center gap-2">
+                <LoaderCircleIcon className="size-4! animate-spin" /> Signing
+                in...
+              </span>
+            ) : (
+              'Sign In'
+            )}
+          </Button>
+        </div>
 
         <div className="text-center text-sm text-muted-foreground">
           Don't have an account?{' '}

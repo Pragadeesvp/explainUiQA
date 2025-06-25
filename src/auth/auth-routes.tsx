@@ -1,7 +1,6 @@
 import { RouteObject } from 'react-router-dom';
 import { BrandedLayout } from './layouts/branded';
 import { ClassicLayout } from './layouts/classic';
-import { CallbackPage } from './pages/callback-page';
 import { ChangePasswordPage } from './pages/change-password-page';
 import { CheckEmail } from './pages/extended/check-email';
 import { ResetPasswordChanged } from './pages/extended/reset-password-changed';
@@ -90,9 +89,5 @@ export const authRoutes: RouteObject[] = [
         element: <ResetPasswordChanged />,
       },
     ],
-  },
-  {
-    path: 'callback',
-    element: <CallbackPage />,
   },
 ];

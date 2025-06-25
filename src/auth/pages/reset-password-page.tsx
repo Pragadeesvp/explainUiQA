@@ -1,11 +1,8 @@
 import { useState } from 'react';
-import { useAuth } from '@/auth/context/auth-context';
+import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, Check, MoveLeft } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
-import { Alert, AlertIcon, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -16,135 +13,108 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { LoaderCircleIcon } from 'lucide-react';
-import {
-  getResetRequestSchema,
-  ResetRequestSchemaType,
-} from '../forms/reset-password-schema';
+import { z } from 'zod';
+import { CognitoUser } from 'amazon-cognito-identity-js';
+import { userPool } from '@/services/authentication.service';
+
+const formSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 export function ResetPasswordPage() {
-  const {} = useAuth();
-  const [isProcessing, setIsProcessing] = useState(false);
+  const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  const form = useForm<ResetRequestSchemaType>({
-    resolver: zodResolver(getResetRequestSchema()),
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
     },
   });
 
-  async function onSubmit(values: ResetRequestSchemaType) {
+  const onSubmit = async (values: FormData) => {
     try {
-      setIsProcessing(true);
-      setError(null);
+      const cognitoUser = new CognitoUser({
+        Username: values.email,
+        Pool: userPool,
+      });
 
-      console.log('Submitting password reset for:', values.email);
+      await new Promise<void>((resolve, reject) => {
+        cognitoUser.forgotPassword({
+          onSuccess: () => {
+            resolve();
+          },
+          onFailure: (err) => {
+            reject(err);
+          },
+        });
+      });
 
-      // Request password reset using Supabase directly
-      const { error } = await supabase.auth.resetPasswordForEmail(
-        values.email,
-        {
-          redirectTo: `${window.location.origin}/auth/reset-password`,
-        },
-      );
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      // Set success message
-      setSuccessMessage(
-        `Password reset link sent to ${values.email}! Please check your inbox and spam folder.`,
-      );
-
-      // Reset form
-      form.reset();
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/auth/change-password');
+      }, 2000);
     } catch (err) {
-      console.error('Password reset request error:', err);
-      setError(
-        err instanceof Error
-          ? `Error: ${err.message}. Please ensure your email is correct and try again.`
-          : 'An unexpected error occurred. Please try again or contact support.',
-      );
-    } finally {
-      setIsProcessing(false);
+      setError(err instanceof Error ? err.message : 'Failed to request password reset');
     }
-  }
+  };
 
   return (
-    <div className="max-w-md mx-auto">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight">
-              Reset Password
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Enter your email to receive a password reset link
-            </p>
-          </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-4">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Reset Password
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Enter your email address and we'll send you a password reset link.
+          </p>
+        </div>
 
-          {error && (
-            <Alert variant="destructive">
-              <AlertIcon>
-                <AlertCircle className="h-4 w-4" />
-              </AlertIcon>
-              <AlertTitle>{error}</AlertTitle>
-            </Alert>
+        {error && (
+          <Alert variant="destructive">
+            <AlertTitle>{error}</AlertTitle>
+          </Alert>
+        )}
+
+        {success && (
+          <Alert>
+            <AlertTitle>
+              Password reset instructions have been sent to your email!
+            </AlertTitle>
+          </Alert>
+        )}
+
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="Enter your email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
+        />
 
-          {successMessage && (
-            <Alert>
-              <AlertIcon>
-                <Check className="h-4 w-4 text-green-500" />
-              </AlertIcon>
-              <AlertTitle>{successMessage}</AlertTitle>
-            </Alert>
-          )}
+        <Button type="submit" className="w-full">
+          Send Reset Instructions
+        </Button>
 
-          <div className="space-y-5">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="your.email@example.com"
-                      type="email"
-                      autoComplete="email"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit" className="w-full" disabled={isProcessing}>
-              {isProcessing ? (
-                <span className="flex items-center gap-2">
-                  <LoaderCircleIcon className="h-4 w-4 animate-spin" /> Sending Link...
-                </span>
-              ) : (
-                'Send Reset Link'
-              )}
-            </Button>
-          </div>
-
-          <div className="text-center text-sm">
-            <Link
-              to="/auth/signin"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-accent-foreground hover:underline hover:underline-offset-2"
-            >
-              <MoveLeft className="size-3.5 opacity-70" /> Back to Sign In
-            </Link>
-          </div>
-        </form>
-      </Form>
-    </div>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          onClick={() => navigate('/auth/login')}
+        >
+          Back to Login
+        </Button>
+      </form>
+    </Form>
   );
 }

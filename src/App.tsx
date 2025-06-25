@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { LoadingBarContainer } from 'react-top-loading-bar';
 import { Toaster } from '@/components/ui/sonner';
-import { AuthProvider } from './auth/providers/supabase-provider';
+import { AuthProvider } from './contexts/AuthContext';
 import { I18nProvider } from './providers/i18n-provider';
 import { ModulesProvider } from './providers/modules-provider';
 import { QueryProvider } from './providers/query-provider';
@@ -19,28 +19,28 @@ export function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <SettingsProvider>
-          <ThemeProvider>
-            <I18nProvider>
-              <HelmetProvider>
-                <TooltipsProvider>
-                  <QueryProvider>
-                    <LoadingBarContainer>
-                      <BrowserRouter basename={BASE_URL}>
+      <SettingsProvider>
+        <ThemeProvider>
+          <I18nProvider>
+            <HelmetProvider>
+              <TooltipsProvider>
+                <QueryProvider>
+                  <LoadingBarContainer>
+                    <BrowserRouter basename={BASE_URL}>
+                      <AuthProvider>
                         <Toaster />
                         <ModulesProvider>
                           <AppRouting />
                         </ModulesProvider>
-                      </BrowserRouter>
-                    </LoadingBarContainer>
-                  </QueryProvider>
-                </TooltipsProvider>
-              </HelmetProvider>
-            </I18nProvider>
-          </ThemeProvider>
-        </SettingsProvider>
-      </AuthProvider>
+                      </AuthProvider>
+                    </BrowserRouter>
+                  </LoadingBarContainer>
+                </QueryProvider>
+              </TooltipsProvider>
+            </HelmetProvider>
+          </I18nProvider>
+        </ThemeProvider>
+      </SettingsProvider>
     </QueryClientProvider>
   );
 }
