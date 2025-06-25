@@ -63,7 +63,7 @@ const Demo6Layout = () => {
                 <Toolbar>
                   <ToolbarHeading />
 
-                  <ToolbarActions>
+                  {/* <ToolbarActions>
                     <>
                       {pathname.startsWith('/store-client') ? (
                         <StoreClientTopbar />
@@ -106,7 +106,7 @@ const Demo6Layout = () => {
                         </>
                       )}
                     </>
-                  </ToolbarActions>
+                  </ToolbarActions> */}
                 </Toolbar>
 
                 <Outlet />

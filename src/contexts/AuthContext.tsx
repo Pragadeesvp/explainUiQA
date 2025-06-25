@@ -211,7 +211,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(response.user || null);
         setIsAuthenticated(true);
         updateBucketName();
-        navigate('/dashboard');
+        navigate('/public-profile/projects/3-columns');
       } else if (response.requiresNewPassword) {
         setRequiresNewPassword(true);
         setCognitoUser(response.cognitoUser || null);
@@ -237,7 +237,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setIsAuthenticated(true);
       setRequiresNewPassword(false);
       updateBucketName();
-      navigate('/dashboard');
+      navigate('/public-profile/projects/3-columns');
     } else {
       setError(response.error || 'Failed to set new password.');
     }
@@ -247,7 +247,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const logout = async () => {
     await apiLogout();
     await clearAuthState();
-    navigate('/login');
+    navigate('/auth/signin');
   };
 
   const value = {

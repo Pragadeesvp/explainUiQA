@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { useAuth } from '@/auth/context/auth-context';
+import { useAuth } from '@/contexts/AuthContext';
 import { I18N_LANGUAGES } from '@/i18n/config';
 import { Language } from '@/i18n/types';
 import {
@@ -259,7 +259,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             className="w-full"
             onClick={logout}
           >
-            Logout
+            Sign Out
           </Button>
         </div>
       </DropdownMenuContent>

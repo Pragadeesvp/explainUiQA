@@ -28,6 +28,7 @@ export function ProjectColumn3Page() {
   );
 
   return (
+    
     <div className="relative">
       <Fragment>
       <Container>

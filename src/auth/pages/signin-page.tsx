@@ -78,7 +78,7 @@ export function SignInPage() {
         <div className="text-center space-y-1 pb-3">
           <h1 className="text-2xl font-semibold tracking-tight">Sign In</h1>
           <p className="text-sm text-muted-foreground">
-            Welcome back! Log in with your credentials.
+            Let's get to work.
           </p>
         </div>
 
