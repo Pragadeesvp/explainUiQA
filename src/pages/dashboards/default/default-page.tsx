@@ -1,7 +1,7 @@
-import { Demo6Page } from '../demo6';
+import { ProjectColumn3Page } from '@/pages/public-profile';
 
 const DefaultPage = () => {
-  return <Demo6Page />;
+  return <ProjectColumn3Page />;
 };
 
 export { DefaultPage };

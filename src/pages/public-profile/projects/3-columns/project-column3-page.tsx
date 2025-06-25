@@ -7,6 +7,7 @@ import {
   EllipsisVertical,
   Mail,
   MapPin,
+  MessageCircleMore,
   MessagesSquare,
   Users,
   Zap,
@@ -14,6 +15,7 @@ import {
 import { toAbsoluteUrl } from '@/lib/helpers';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/common/container';
+import { ChatSheet } from '@/partials/topbar/chat-sheet';
 import { Projects2 } from './components';
 
 export function ProjectColumn3Page() {
@@ -26,20 +28,12 @@ export function ProjectColumn3Page() {
   );
 
   return (
-    <Fragment>
-      <UserHero
-        name="Jenny Klabber"
-        image={image}
-        info={[
-          { label: 'KeenThemes', icon: Zap },
-          { label: 'SF, Bay Area', icon: MapPin },
-          { email: 'jenny@kteam.com', icon: Mail },
-        ]}
-      />
+    <div className="relative">
+      <Fragment>
       <Container>
         <Navbar>
           <PageMenu />
-          <NavbarActions>
+          {/* <NavbarActions>
             <Button>
               <Users /> Connect
             </Button>
@@ -53,12 +47,26 @@ export function ProjectColumn3Page() {
                 </Button>
               }
             />
-          </NavbarActions>
+          </NavbarActions> */}
         </Navbar>
       </Container>
       <Container>
         <Projects2 />
       </Container>
-    </Fragment>
+      </Fragment>
+
+      {/* Floating Chat Button */}
+      <ChatSheet
+        trigger={
+          <Button
+            className="fixed right-6 top-1/2 -translate-y-1/2 z-50 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 bg-[#00d1ff] text-black hover:bg-[#00d1ff]/90 border-[#00d1ff]"
+            mode="icon"
+            size="lg"
+          >
+            <MessageCircleMore className="h-6 w-6" />
+          </Button>
+        }
+      />
+    </div>
   );
 }

@@ -63,7 +63,7 @@ export function ChatSheet({ trigger }: { trigger: ReactNode }) {
             <Button
               variant="outline"
               size="sm"
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 bg-[#00d1ff] text-black hover:bg-[#00d1ff]/90 border-[#00d1ff]"
             >
               <Mic className="h-4 w-4" />
               Speak
