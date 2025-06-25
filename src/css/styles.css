@@ -24,7 +24,7 @@
 @import './components/scrollable.css';
 
 /* Demos */
-@import './demos/demo1.css';
+/* Demo6 layout uses inline styles and doesn't require a separate CSS file */
 
 /** Dark/Light Theme Variant **/
 @custom-variant dark (&:is(.dark *));
