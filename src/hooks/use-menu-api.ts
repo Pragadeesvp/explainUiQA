@@ -29,11 +29,9 @@ export function useSidebarMenu(): UseQueryResult<MenuConfig, Error> {
 
   return useQuery({
     queryKey: menuQueryKeys.sidebar,
-    queryFn: () => menuService.getSidebarMenu(),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-    retry: 2,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    queryFn: () => Promise.resolve([]),
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 }
 
@@ -85,7 +83,7 @@ export function useMenuData(menuType: 'sidebar' | 'mega' | 'root'): UseQueryResu
     queryFn: () => {
       switch (menuType) {
         case 'sidebar':
-          return menuService.getSidebarMenu();
+          return Promise.resolve([]);
         case 'mega':
           return menuService.getMegaMenu();
         case 'root':

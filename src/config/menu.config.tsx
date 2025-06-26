@@ -448,34 +448,7 @@ export const MENU_SIDEBAR_CUSTOM: MenuConfig = [
   },
 ];
 
-export const MENU_SIDEBAR_COMPACT: MenuConfig = [
-  {
-    title: 'Gas Station',
-    icon: UserCircle,
-    children: [
-      {
-        title: 'FY04',
-        icon: LayoutGrid,
-        path: '/',
-      },
-      {
-        title: 'Output',
-        icon: LayoutGrid,
-        path: '/',
-      }
-    ]
-  },
-  {
-    title: 'Liquor Warehouse',
-    icon: UserCircle,
-    children: [
-      {
-        title: '2025',
-        icon: LayoutGrid,
-        path: '/',
-      }
-    ]
-  },
+
   // {
   //   title: 'Network',
   //   icon: Users,
@@ -612,7 +585,7 @@ export const MENU_SIDEBAR_COMPACT: MenuConfig = [
   //     { title: 'Error 500', path: '/error/500' },
   //   ],
   // },
-];
+
 
 export const MENU_MEGA: MenuConfig = [
   {

@@ -50,9 +50,15 @@ export const extractOrganizationsFromToken = (token: string): Organization[] => 
  */
 export const getCurrentOrganization = (): Organization | null => {
   try {
-    // const stored = localStorage.getItem('currentOrganization');
-    const stored = "explain-staging";
-    return stored ? JSON.parse(stored) : null;
+    const stored = localStorage.getItem('currentOrganization');
+    if (!stored) return null;
+    // Only parse if it looks like JSON
+    if (stored.trim().startsWith('{')) {
+      return JSON.parse(stored);
+    } else {
+      // If it's a plain string, ignore it (legacy value)
+      return null;
+    }
   } catch (error) {
     console.error('Failed to get current organization from localStorage:', error);
     return null;
@@ -101,76 +107,8 @@ export const getOrganizationId = (): string => {
  * @param organizations - Array of organizations
  * @returns MenuConfig array
  */
-export const convertOrganizationsToMenuItems = (organizations: Organization[]): MenuConfig => {
-  return organizations.map((org) => ({
-    title: 'Projects',
-    icon: UserCircle,
-    children: [
-      {
-        title: 'FY04',
-        icon: LayoutGrid,
-        path: `/${org.id}/fy04`,
-      },
-      {
-        title: 'Output',
-        icon: LayoutGrid,
-        path: `/${org.id}/output`,
-      },
-      {
-        title: 'Folders',
-        icon: FolderOpen,
-        children: [
-          {
-            title: 'Documents',
-            path: `/${org.id}/folders/documents`,
-          },
-          {
-            title: 'Reports',
-            path: `/${org.id}/folders/reports`,
-          },
-          {
-            title: 'Analytics',
-            path: `/${org.id}/folders/analytics`,
-          },
-        ],
-      },
-    ],
-  }));
-};
 
-/**
- * Gets sidebar menu items from organizations
- * @returns Promise<MenuConfig>
- */
-export const getSidebarMenu = async (): Promise<MenuConfig> => {
-  try {
-    // Get token from localStorage or wherever it's stored
-    //  const token = localStorage.getItem('access_token') || localStorage.getItem('authToken');
-    const token = getJWTToken();
-    if (!token) {
-      console.warn('No token found, returning empty menu');
-      return [];
-    }
 
-    // Extract organizations from token
-    const organizations = extractOrganizationsFromToken(token);
-
-    // Convert to menu items
-    const menuItems = convertOrganizationsToMenuItems(organizations);
-
-    // Add dashboard at the top
-    const dashboardMenu: MenuItem = {
-      title: 'Dashboard',
-      icon: LayoutGrid,
-      path: '/dashboard',
-    };
-
-    return [dashboardMenu, ...menuItems];
-  } catch (error) {
-    console.error('Failed to generate sidebar menu from organizations:', error);
-    return [];
-  }
-};
 
 /**
  * Gets mega menu items (simplified version)
@@ -239,7 +177,6 @@ if (typeof window !== 'undefined') {
 
 // Create a menu service object for compatibility
 export const menuService = {
-  getSidebarMenu,
   getMegaMenu,
   getRootMenu,
   clearCache: () => {
