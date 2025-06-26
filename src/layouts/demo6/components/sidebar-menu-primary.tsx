@@ -11,7 +11,7 @@ import {
   AccordionMenuSubContent,
   AccordionMenuSubTrigger,
 } from '@/components/ui/accordion-menu';
-import { FileText, Folder, Calendar,LayoutGrid } from 'lucide-react';
+import { FileText, Folder, LayoutGrid } from 'lucide-react';
 import { useMenuContext, MenuItem } from '@/contexts/MenuContext';
 
 export function SidebarMenuPrimary() {

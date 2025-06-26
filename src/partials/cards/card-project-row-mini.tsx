@@ -37,6 +37,7 @@ interface IProjectRowMiniProps {
       number?: number;
     };
   };
+  path: string | '#';
 }
 
 const CardProjectRowMini = ({
@@ -46,6 +47,7 @@ const CardProjectRowMini = ({
   status,
   progress,
   team,
+  path,
 }: IProjectRowMiniProps) => {
   return (
     <Card className="p-3">
@@ -60,7 +62,7 @@ const CardProjectRowMini = ({
           </div>
           <div className="flex flex-col min-w-0 flex-1">
             <Link
-              to="#"
+              to={path}
               className="text-sm font-medium text-mono hover:text-primary-active truncate"
             >
               {name}
@@ -92,7 +94,7 @@ const CardProjectRowMini = ({
           
           <DropdownMenu3
             trigger={
-              <Button variant="ghost" mode="icon" size="xs">
+              <Button variant="ghost" mode="icon" size="icon">
                 <EllipsisVertical className="size-3" />
               </Button>
             }

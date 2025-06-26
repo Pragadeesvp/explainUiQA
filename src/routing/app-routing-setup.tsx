@@ -2,6 +2,7 @@ import { AuthRouting } from '@/auth/auth-routing';
 import { RequireAuth } from '@/auth/require-auth';
 import { ErrorRouting } from '@/errors/error-routing';
 import { Demo6Layout } from '@/layouts/demo6/layout';
+import { ProjectColumn3Page } from '@/pages/projects';
 import {
   AccountActivityPage,
   AccountAllowedIPAddressesPage,
@@ -75,8 +76,6 @@ import {
   ProfilePlainPage,
   ProfileTeamsPage,
   ProfileWorksPage,
-  ProjectColumn2Page,
-  ProjectColumn3Page,
 } from '@/pages/public-profile';
 import { AllProductsPage, DashboardPage } from '@/pages/store-admin';
 import {
@@ -105,6 +104,7 @@ export function AppRoutingSetup() {
           <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route path="dashboard" element={<DefaultPage />} />
           <Route path="dark-sidebar" element={<DefaultPage />} />
+          <Route path="projects/3-columns" element={<ProjectColumn3Page />} />
           <Route
             path="public-profile/profiles/default/"
             element={<ProfileDefaultPage />}
@@ -144,14 +144,6 @@ export function AppRoutingSetup() {
           <Route
             path="public-profile/profiles/modal"
             element={<ProfileModalPage />}
-          />
-          <Route
-            path="public-profile/projects/3-columns"
-            element={<ProjectColumn3Page />}
-          />
-          <Route
-            path="public-profile/projects/2-columns"
-            element={<ProjectColumn2Page />}
           />
           <Route path="public-profile/works" element={<ProfileWorksPage />} />
           <Route path="public-profile/teams" element={<ProfileTeamsPage />} />
