@@ -55,7 +55,11 @@ import {
   Zap,
 } from 'lucide-react';
 import { type MenuConfig } from './types';
-
+export var customNavbar : MenuConfig = [
+  { title: 'Projects', path: '/projects' },
+      { title: 'Works', path: '/public-profile/works' },
+      { title: 'Activity', path: '/public-profile/activity' },
+]
 export const MENU_SIDEBAR: MenuConfig = [
   {
     title: 'Dashboards',

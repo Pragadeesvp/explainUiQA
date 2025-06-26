@@ -105,7 +105,7 @@ export function MenuProvider({ children }: MenuProviderProps) {
         const projectsParentItem: MenuItem = {
           title: 'Projects',
           icon: Users,
-          path: 'projects-root',
+          path: '/projects',
           type: 'folder',
           children: projectItems,
         };

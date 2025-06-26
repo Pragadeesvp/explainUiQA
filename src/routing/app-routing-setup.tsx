@@ -101,10 +101,12 @@ export function AppRoutingSetup() {
 
       <Route element={<RequireAuth />}>
         <Route element={<Demo6Layout />}>
-          <Route path="/" element={<Navigate to="/dashboard" />} />
-          <Route path="dashboard" element={<DefaultPage />} />
+          {/* <Route path="/" element={<Navigate to="/dashboard" />} /> */}
+          {/* <Route path="dashboard" element={<DefaultPage />} /> */}
           <Route path="dark-sidebar" element={<DefaultPage />} />
-          <Route path="projects/3-columns" element={<ProjectColumn3Page />} />
+          <Route path="projects" element={<DefaultPage />}/>
+          <Route path="/" element={<Navigate to="/projects" />} />
+          <Route path="projects" element={<ProjectColumn3Page />} />
           <Route
             path="public-profile/profiles/default/"
             element={<ProfileDefaultPage />}

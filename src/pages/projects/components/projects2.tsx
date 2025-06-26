@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CardProjectMini, CardProjectRowMini } from '@/partials/cards';
 import { LayoutGrid, List } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom'; // FIXED: use react-router-dom
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { listFolders } from '@/services/file-storage.service';
 
 interface IProjects2Item {
   logo: string;
@@ -12,16 +13,7 @@ interface IProjects2Item {
   startDate?: string;
   endDate?: string;
   status: {
-    variant?:
-      | 'primary'
-      | 'mono'
-      | 'destructive'
-      | 'secondary'
-      | 'info'
-      | 'success'
-      | 'warning'
-      | null
-      | undefined;
+    variant?: 'primary' | 'mono' | 'destructive' | 'secondary' | 'info' | 'success' | 'warning' | null | undefined;
     label: string;
   };
   progress: {
@@ -41,82 +33,70 @@ interface IProjects2Item {
 type IProjects2Items = Array<IProjects2Item>;
 
 const Projects2 = () => {
-  const [activeView, setActiveView] = useState('cards');
+  const [activeView, setActiveView] = useState<'cards' | 'list'>('cards');
+  const [projects, setProjects] = useState<IProjects2Items>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const projects: IProjects2Items = [
-    {
-      logo: 'plurk.svg',
-      name: 'Phoenix SaaS',
-      description: 'Real-time photo sharing app',
-      startDate: 'Mar 06',
-      endDate: 'Dec 21',
-      status: {
-        label: 'In Progress',
-        variant: 'primary',
-      },
-      progress: {
-        variant: 'bg-primary',
-        value: 55,
-      },
-      team: {
-        size: 'size-[30px]',
-        group: [
-          { filename: '300-4.png' },
-          { filename: '300-2.png' },
-          {
-            fallback: 'S',
-            variant: 'text-primary-foreground ring-background bg-primary',
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const folders = await listFolders('');
+
+        const projectItems: IProjects2Items = folders.map((folder) => ({
+          logo: '', // Add logic to assign logo if available
+          name: folder.name,
+          description: '', // Optional description
+          startDate: '',
+          endDate: '',
+          status: {
+            variant: 'primary',
+            label: 'Active',
           },
-        ],
-      },
-    },
-    {
-      logo: 'telegram.svg',
-      name: 'Radiant Wave',
-      description: 'Short-term accommodation marketplace',
-      status: {
-        label: 'Completed',
-        variant: 'success',
-      },
-      progress: {
-        variant: 'bg-green-500',
-        value: 100,
-      },
-      team: {
-        size: 'size-[30px]',
-        group: [{ filename: '300-24.png' }, { filename: '300-7.png' }],
-      },
-    },
-  ];
+          progress: {
+            variant: 'primary',
+            value: 50, // Placeholder value
+          },
+          team: {
+            group: [],
+          },
+        }));
 
-  const renderProject = (project: IProjects2Item, index: number) => {
-    return (
-      <CardProjectMini
-        logo={project.logo}
-        name={project.name}
-        description={project.description}
-        status={project.status}
-        progress={project.progress}
-        team={project.team}
-        key={index}
-      />
-    );
-  };
+        setProjects(projectItems);
+      } catch (error) {
+        console.error('Error fetching project folders:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const renderItem = (item: IProjects2Item, index: number) => {
-    return (
-      <CardProjectRowMini
-        logo={item.logo}
-        name={item.name}
-        description={item.description}
-        status={item.status}
-        progress={item.progress}
-        team={item.team}
-        key={index}
-        path=''
-      />
-    );
-  };
+    fetchProjects();
+  }, []);
+
+  const renderProjectCard = (project: IProjects2Item, index: number) => (
+    <CardProjectMini
+      key={index}
+      logo={project.logo}
+      name={project.name}
+      description={project.description}
+      status={project.status}
+      progress={project.progress}
+      team={project.team}
+    />
+  );
+
+  const renderProjectRow = (project: IProjects2Item, index: number) => (
+    <CardProjectRowMini
+      key={index}
+      logo={project.logo}
+      name={project.name}
+      description={project.description}
+      status={project.status}
+      progress={project.progress}
+      team={project.team}
+      path=""
+    />
+  );
 
   return (
     <div className="flex flex-col items-stretch gap-5 lg:gap-7.5">
@@ -129,7 +109,7 @@ const Projects2 = () => {
           variant="outline"
           value={activeView}
           onValueChange={(value) => {
-            if (value) setActiveView(value);
+            if (value === 'cards' || value === 'list') setActiveView(value);
           }}
         >
           <ToggleGroupItem value="cards">
@@ -140,26 +120,19 @@ const Projects2 = () => {
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
-      {activeView === 'cards' && (
+
+      {loading ? (
+        <div className="text-center py-6 text-gray-500">Loading projects...</div>
+      ) : activeView === 'cards' ? (
         <div id="projects_cards">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-3">
-            {projects.map((project, index) => {
-              return renderProject(project, index);
-            })}
+            {projects.map(renderProjectCard)}
           </div>
-          {/* <div className="flex grow justify-center pt-5 lg:pt-7.5">
-            <Button mode="link" underlined="dashed" asChild>
-              <Link to="#">Show more projects</Link>
-            </Button>
-          </div> */}
         </div>
-      )}
-      {activeView === 'list' && (
+      ) : (
         <div id="projects_list">
           <div className="flex flex-col gap-5 lg:gap-7.5">
-            {projects.map((item, index) => {
-              return renderItem(item, index);
-            })}
+            {projects.map(renderProjectRow)}
           </div>
           <div className="flex grow justify-center pt-5 lg:pt-7.5">
             <Button mode="link" underlined="dashed" asChild>
