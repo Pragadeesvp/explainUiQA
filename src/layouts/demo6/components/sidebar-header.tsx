@@ -48,25 +48,22 @@ export function SidebarHeader() {
 
   return (
     <div className="mb-3.5">
-      {/* <div className="flex items-center justify-between gap-2.5 px-3.5 h-[70px]">
+      <div className="flex items-center justify-between gap-2.5 px-3.5 h-[70px]">
         <Link to="/">
-           <img */}
-           <div className="flex flex-col px-3.5 py-2">
-           <Link to="/" className="mb-2 flex justify-center">
-             <img
-            src={toAbsoluteUrl('src/assests/img/explain-logo.svg')}
+           <img
+            src={toAbsoluteUrl('src/assests/img/explain-mini.ico')}
             className="dark:hidden h-[50px]"
             alt="image"
           />
           <img
-            src={toAbsoluteUrl('src/assests/img/explain-logo-dark.svg')}
+            src={toAbsoluteUrl('src/assests/img/explain-mini.ico')}
             className="hidden dark:block h-[50px]"
             alt="image"
           />
         </Link>
         <DropdownMenu>
-        <DropdownMenuTrigger className="cursor-pointer text-mono font-medium flex items-center justify-center gap-2 w-fit p-1 rounded-md bg-background border-border mx-auto">
-          {/* <DropdownMenuTrigger className="cursor-pointer text-mono font-medium flex items-center justify-between gap-2 w-auto p-1 rounded-md bg-background border-border"> */}
+        {/* <DropdownMenuTrigger className="cursor-pointer text-mono font-medium flex items-center justify-center gap-2 w-fit p-1 rounded-md bg-background border-border mx-auto"> */}
+           <DropdownMenuTrigger className="cursor-pointer text-mono font-medium flex items-center justify-between gap-2 w-auto p-1"> 
             {currentOrg ? currentOrg.displayName : 'Select Organization'}
             <ChevronDown className="size-3.5! text-muted-foreground" />
           </DropdownMenuTrigger>

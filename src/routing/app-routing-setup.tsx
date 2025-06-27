@@ -106,6 +106,7 @@ export function AppRoutingSetup() {
           <Route path="dark-sidebar" element={<DefaultPage />} />
           <Route path="projects" element={<DefaultPage />}/>
           <Route path="/" element={<Navigate to="/projects" />} />
+          <Route path="/dashboard" element={<Navigate to="/projects" />} />
           <Route path="projects" element={<ProjectColumn3Page />} />
           <Route
             path="public-profile/profiles/default/"
